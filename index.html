@@ -33,6 +33,10 @@
   --on-band-muted: #e6dde8;
   --on-band-line: rgba(255, 255, 255, 0.28);
   --ok: #15803d;
+  --ok-bg: #e7f5ec;
+  --ok-fg: #0f5a2b;
+  --danger: #a3121f;
+  --danger-bg: #fbe9eb;
   --cam-a: #d3d4d7;
   --cam-b: #c8c9cc;
   --font-display: "Bricolage Grotesque", "Arial Narrow", Arial, sans-serif;
@@ -165,8 +169,16 @@ form { display: grid; gap: 16px; }
 .field textarea { min-height: 112px; resize: vertical; }
 .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.result { margin-top: 4px; padding: 16px; border: 1px solid var(--accent); border-radius: 6px; background: var(--panel); display: grid; gap: 12px; }
-.result pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 14px/1.55 var(--font-mono); color: var(--fg); }
+.field .req { color: var(--accent); }
+.field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+.field-error { font-size: 13.5px; font-weight: 600; color: var(--danger); }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.form-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.form-foot small { color: var(--muted); font-size: 13.5px; }
+.btn[disabled] { opacity: 0.7; cursor: progress; transform: none; }
+.status { padding: 14px 16px; border-radius: 6px; font-weight: 600; border: 1px solid; }
+.status.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-fg); }
+.status.err { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
 
 /* Rodapé */
 footer { background: var(--band); color: var(--on-band-muted); padding-block: 36px; font-size: 14px; }
@@ -348,13 +360,17 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
     <div class="wrap">
       <div>
         <p class="eyebrow">Contato</p>
-        <h2>Conte como é a sua portaria.</h2>
-        <p class="lead">Descreva a unidade e o que você precisa. Respondemos com os próximos passos para monitoramento, consultoria ou os dois.</p>
+        <h2>Fale com a gente.</h2>
+        <p class="lead">Conte como é a sua portaria e o que você precisa. Retornamos pelo e-mail ou telefone informado com os próximos passos para monitoramento, consultoria ou os dois.</p>
       </div>
-      <form id="briefing" novalidate>
+      <form id="contato-form" action="/api/contato" method="post" novalidate>
         <div class="row2">
-          <div class="field"><label for="nome">Nome</label><input id="nome" name="nome" type="text" autocomplete="name" required></div>
-          <div class="field"><label for="local">Condomínio ou empresa</label><input id="local" name="local" type="text" autocomplete="organization"></div>
+          <div class="field"><label for="nome">Nome <span class="req" aria-hidden="true">*</span></label><input id="nome" name="nome" type="text" autocomplete="name" maxlength="120" required><span class="field-error" id="nome-erro" hidden></span></div>
+          <div class="field"><label for="local">Condomínio ou empresa</label><input id="local" name="local" type="text" autocomplete="organization" maxlength="160"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="email">E-mail <span class="req" aria-hidden="true">*</span></label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160" required><span class="field-error" id="email-erro" hidden></span></div>
+          <div class="field"><label for="telefone">Telefone ou WhatsApp</label><input id="telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" placeholder="(11) 90000-0000"></div>
         </div>
         <div class="field">
           <label for="interesse">Interesse</label>
@@ -364,11 +380,13 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
             <option>Os dois serviços</option>
           </select>
         </div>
-        <div class="field"><label for="msg">Situação atual</label><textarea id="msg" name="msg" placeholder="Número de blocos, quantidade de câmeras, como é a portaria hoje."></textarea></div>
-        <button class="btn" type="submit" style="justify-self:start">Montar meu pedido</button>
-        <div class="result" id="result" hidden>
-          <pre id="out"></pre>
+        <div class="field"><label for="msg">Mensagem <span class="req" aria-hidden="true">*</span></label><textarea id="msg" name="mensagem" maxlength="4000" required placeholder="Número de blocos, quantidade de câmeras, como é a portaria hoje."></textarea><span class="field-error" id="msg-erro" hidden></span></div>
+        <div class="hp" aria-hidden="true"><label for="site">Não preencha este campo</label><input id="site" name="site" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="form-foot">
+          <button class="btn" type="submit" id="enviar">Enviar mensagem</button>
+          <small>* Campos obrigatórios</small>
         </div>
+        <div class="status" id="status" role="status" aria-live="polite" hidden></div>
       </form>
     </div>
   </section>
@@ -391,22 +409,77 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
   }
   tick(); setInterval(tick, 1000);
 
-  var form = document.getElementById("briefing");
-  var box = document.getElementById("result");
-  var out = document.getElementById("out");
+  var form = document.getElementById("contato-form");
+  var btn = document.getElementById("enviar");
+  var status = document.getElementById("status");
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function setError(id, msg) {
+    var input = document.getElementById(id);
+    var err = document.getElementById(id + "-erro");
+    if (msg) {
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", id + "-erro");
+      err.textContent = msg; err.hidden = false;
+    } else {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+      err.textContent = ""; err.hidden = true;
+    }
+  }
+  function showStatus(kind, msg) {
+    status.className = "status " + kind;
+    status.textContent = msg;
+    status.hidden = false;
+  }
+
+  ["nome", "email", "msg"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", function () { setError(id, ""); });
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    var f = new FormData(form);
-    var nome = (f.get("nome") || "").toString().trim();
-    if (!nome) { document.getElementById("nome").focus(); return; }
-    var linhas = [
-      "Olá! Quero conversar sobre " + f.get("interesse") + ".",
-      "Nome: " + nome,
-      "Condomínio/empresa: " + ((f.get("local") || "").toString().trim() || "não informado"),
-      "Situação atual: " + ((f.get("msg") || "").toString().trim() || "não informada")
-    ];
-    out.textContent = linhas.join("\n");
-    box.hidden = false;
+    status.hidden = true;
+    var data = {
+      nome: form.nome.value.trim(),
+      local: form.local.value.trim(),
+      email: form.email.value.trim(),
+      telefone: form.telefone.value.trim(),
+      interesse: form.interesse.value,
+      mensagem: form.mensagem.value.trim(),
+      site: form.site.value
+    };
+
+    var first = null;
+    function check(id, ok, msg) { setError(id, ok ? "" : msg); if (!ok && !first) first = id; }
+    check("nome", data.nome.length > 1, "Informe seu nome.");
+    check("email", EMAIL_RE.test(data.email), "Informe um e-mail válido, por exemplo nome@empresa.com.br.");
+    check("msg", data.mensagem.length > 4, "Escreva uma mensagem curta sobre o que você precisa.");
+    if (first) { document.getElementById(first).focus(); return; }
+
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+    fetch("/api/contato", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (res) {
+        if (res.ok) {
+          form.reset();
+          showStatus("ok", "Mensagem enviada. Obrigado pelo contato, retornaremos em breve.");
+        } else {
+          showStatus("err", res.body.erro || "Não foi possível enviar agora. Tente novamente em alguns minutos.");
+        }
+      })
+      .catch(function () {
+        showStatus("err", "Sem conexão com o servidor. Verifique sua internet e tente novamente.");
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.textContent = "Enviar mensagem";
+      });
   });
 })();
 </script>

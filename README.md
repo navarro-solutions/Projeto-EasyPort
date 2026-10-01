@@ -18,8 +18,22 @@ python3 -m http.server 8000
 2. Em **Framework Preset**, deixe **Other**. Não é preciso comando de build nem pasta de saída.
 3. Clique em **Deploy**. Cada push na branch `main` publica uma nova versão.
 
+## Formulário de contato
+
+O formulário envia os dados para `api/contato.js`, uma função da Vercel que manda o e-mail pelo [Resend](https://resend.com). Configure no projeto da Vercel (Settings > Environment Variables):
+
+| Variável | Para que serve |
+| --- | --- |
+| `RESEND_API_KEY` | Chave da API do Resend. |
+| `CONTACT_TO_EMAIL` | E-mail que recebe os contatos. Aceita vários, separados por vírgula. |
+| `CONTACT_FROM_EMAIL` | Opcional. Remetente, por exemplo `Easy Port <contato@seudominio.com.br>`. Sem ele, o envio sai de `onboarding@resend.dev`, que só entrega para o e-mail dono da conta do Resend. |
+
+Depois de mudar uma variável, faça um novo deploy para ela valer.
+
+O e-mail recebido vem com "responder para" apontando para o cliente, então basta responder a mensagem. Há um campo oculto que descarta envios de robôs.
+
 ## Pontos para ajustar antes do lançamento
 
 - Confirmar o nome da marca: a logo diz "Easy Porter" e o título da página diz "Easy Port".
-- O formulário de contato só monta o texto do pedido para copiar. Ligue a um e-mail ou WhatsApp da empresa para receber os contatos.
 - Revisar os textos sobre o Smart Sampa e o fluxo de monitoramento com o que a empresa realmente entrega.
+- Verificar o domínio da empresa no Resend e definir `CONTACT_FROM_EMAIL`, para os e-mails saírem com o nome da empresa e caírem menos no spam.
