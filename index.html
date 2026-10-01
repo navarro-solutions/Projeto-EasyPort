@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easy Port</title>
+<meta name="description" content="Posto de monitoramento 24 horas conectado ao Smart Sampa e consultoria de gestão em portaria remota: processos, capacitação de pessoas e organização dos setores.">
+<meta name="theme-color" content="#601766">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Easy Port">
+<meta property="og:description" content="Monitoramento 24h conectado ao Smart Sampa e consultoria de gestão em portaria remota.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: cabeçalho branco, hero com a foto da fachada como papel de parede, faixa roxa no fluxo e no rodapé (cores medidas na identidade) */
+:root {
+  --bg: #afb0b2;
+  --surface: #c6c7ca;
+  --panel: #dcdddf;
+  --field: #f4f4f5;
+  --field-border: #5b5a63;
+  --line: #8a8b90;
+  --fg: #16131a;
+  --muted: #2f2d36;
+  --accent: #601766;
+  --accent-strong: #4a1050;
+  --on-accent: #ffffff;
+  --brand-grey: #98989c;
+  --band: #601766;
+  --on-band: #ffffff;
+  --on-band-muted: #e6dde8;
+  --on-band-line: rgba(255, 255, 255, 0.28);
+  --ok: #15803d;
+  --cam-a: #d3d4d7;
+  --cam-b: #c8c9cc;
+  --font-display: "Bricolage Grotesque", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 17px/1.6 var(--font-body);
+  margin: 0; -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.wrap { width: 100%; max-width: 1160px; margin-inline: auto; padding-inline: var(--gutter); }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+
+/* Cabeçalho */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 10px; }
+.brand { display: block; line-height: 0; }
+.brand img { height: 44px; width: auto; max-width: 100%; display: block; }
+nav.links { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
+nav.links a { text-decoration: none; color: var(--muted); padding-block: 8px; }
+nav.links a:hover { color: var(--accent); }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 6px; background: var(--accent); color: var(--on-accent); font: 600 16px/1 var(--font-body); text-decoration: none; border: 1px solid var(--accent); cursor: pointer; transition: transform 0.18s ease, background 0.18s ease; }
+.btn:hover { transform: translateY(-2px); background: var(--accent-strong); border-color: var(--accent-strong); }
+.btn.ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+.btn.ghost:hover { background: var(--surface); }
+.top .btn { min-height: 44px; padding: 0 18px; font-size: 15px; }
+
+/* Hero com papel de parede */
+.hero {
+  position: relative; color: #fff;
+  background:
+    linear-gradient(90deg, rgba(12, 8, 14, 0.9) 0%, rgba(12, 8, 14, 0.74) 42%, rgba(12, 8, 14, 0.18) 100%),
+    url("assets/papel-de-parede.jpg") center / cover no-repeat #1b1520;
+  padding-block: clamp(64px, 10vw, 140px);
+  border-bottom: 4px solid var(--accent);
+}
+.hero :focus-visible { outline-color: #fff; }
+.hero .copy { max-width: 560px; }
+.hero .eyebrow { color: #e6dde8; }
+.hero h1 { font-size: clamp(38px, 5.6vw, 68px); font-weight: 800; margin-block: 18px 22px; }
+.hero p.lead { color: #ece8ee; font-size: clamp(17px, 1.6vw, 20px); max-width: 52ch; }
+.hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.btn.light { background: #fff; color: var(--accent); border-color: #fff; }
+.btn.light:hover { background: #f1e9f3; border-color: #f1e9f3; }
+.btn.outline-light { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.7); }
+.btn.outline-light:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+
+/* Seções */
+section { padding-block: clamp(56px, 8vw, 104px); }
+.sec-head { display: grid; gap: 16px; max-width: 760px; }
+.sec-head h2 { font-size: clamp(32px, 4.4vw, 52px); font-weight: 800; }
+.sec-head p { color: var(--muted); max-width: 60ch; }
+
+/* Mosaico de câmeras */
+.mon-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; margin-bottom: clamp(40px, 6vw, 72px); }
+.wall { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.wall-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 4px 4px 12px; font: 500 12px/1.2 var(--font-mono); letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+.wall-head b { color: var(--fg); font-weight: 500; }
+.live { display: inline-flex; align-items: center; gap: 8px; color: var(--ok); }
+.live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.25; } }
+.grid-cams { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cam { position: relative; aspect-ratio: 4 / 3; border-radius: 4px; overflow: hidden; background: repeating-linear-gradient(135deg, var(--cam-a) 0 10px, var(--cam-b) 10px 20px); border: 1px solid var(--line); }
+.cam span { position: absolute; left: 6px; bottom: 6px; right: 6px; font: 500 10.5px/1.25 var(--font-mono); color: var(--fg); background: rgba(244, 244, 245, 0.92); padding: 3px 5px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cam i { position: absolute; top: 7px; left: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.cam.alert { border-color: var(--accent); border-width: 2px; }
+.cam.alert i { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.cam.alert::after { content: "ATENDENDO"; position: absolute; top: 5px; right: 6px; font: 500 9.5px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--on-accent); background: var(--accent); padding: 3px 5px; border-radius: 3px; }
+.wall-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 4px 2px; font: 500 12px/1.2 var(--font-mono); color: var(--muted); }
+.wall-foot time { color: var(--fg); font-variant-numeric: tabular-nums; }
+
+/* Serviços */
+.svc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.svc + .svc { margin-top: 20px; }
+.svc > div { padding: clamp(24px, 4vw, 48px); min-width: 0; }
+.svc .main { background: var(--surface); display: grid; gap: 18px; align-content: start; }
+.svc .main h3 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; }
+.svc .main p { color: var(--muted); }
+.svc .tag { font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.svc .list { background: var(--panel); }
+.svc ul { margin: 0; padding: 0; display: grid; align-content: start; }
+.svc .list li { list-style: none; padding-block: 16px; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.svc .list li:first-child { padding-top: 0; }
+.svc .list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.svc .list strong { font: 700 18px/1.3 var(--font-display); letter-spacing: -0.01em; }
+.svc .list span { color: var(--muted); font-size: 15.5px; }
+.svc.flip .main { order: 2; }
+
+/* Fluxo (faixa roxa) */
+.band { background: var(--band); color: var(--on-band); }
+.band .eyebrow { color: var(--on-band-muted); }
+.band .sec-head { margin-bottom: clamp(32px, 5vw, 56px); }
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; }
+.flow li { padding: 8px 24px 8px 0; display: grid; gap: 10px; align-content: start; }
+.flow li + li { padding-left: 24px; border-left: 1px solid var(--on-band-line); }
+.flow li::before { counter-increment: s; content: "ETAPA " counter(s); font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; color: var(--on-band-muted); }
+.flow h3 { font-size: 22px; font-weight: 700; }
+.flow p { color: var(--on-band-muted); font-size: 15.5px; }
+
+/* Pilares */
+.pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: clamp(32px, 5vw, 56px); }
+.pillar { border-top: 4px solid var(--accent); background: var(--surface); padding: 28px 24px 32px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.pillar svg { width: 36px; height: 36px; color: var(--accent); }
+.pillar h3 { font-size: 24px; font-weight: 700; }
+.pillar p { color: var(--muted); font-size: 16px; }
+
+.who-wrap { margin-top: clamp(40px, 6vw, 72px); display: grid; gap: 20px; }
+.who-wrap h2 { font-size: clamp(26px, 3vw, 34px); font-weight: 800; }
+.who { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.who li { padding: 12px 18px; border: 1px solid var(--field-border); border-radius: 999px; font-weight: 500; background: var(--surface); }
+
+/* Contato */
+.contact { background: var(--surface); border-top: 1px solid var(--line); }
+.contact .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.contact h2 { font-size: clamp(32px, 4.4vw, 52px); font-weight: 800; margin-block: 16px 18px; }
+.contact p.lead { color: var(--muted); max-width: 46ch; }
+form { display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-size: 14px; font-weight: 600; }
+.field input, .field select, .field textarea { width: 100%; min-height: 48px; padding: 12px 14px; font: 400 16px/1.4 var(--font-body); color: var(--fg); background: var(--field); border: 1px solid var(--field-border); border-radius: 6px; }
+.field textarea { min-height: 112px; resize: vertical; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.result { margin-top: 4px; padding: 16px; border: 1px solid var(--accent); border-radius: 6px; background: var(--panel); display: grid; gap: 12px; }
+.result pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 14px/1.55 var(--font-mono); color: var(--fg); }
+.result .note { font-size: 14px; color: var(--muted); }
+
+/* Rodapé */
+footer { background: var(--band); color: var(--on-band-muted); padding-block: 36px; font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; }
+footer img { height: 48px; width: auto; max-width: 100%; display: block; }
+
+/* Responsivo */
+@media (max-width: 960px) {
+  .mon-top, .contact .wrap { grid-template-columns: minmax(0, 1fr); }
+  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; }
+  .flow li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .pillars { grid-template-columns: minmax(0, 1fr); }
+  .hero { background:
+    linear-gradient(180deg, rgba(12, 8, 14, 0.82) 0%, rgba(12, 8, 14, 0.7) 100%),
+    url("assets/papel-de-parede.jpg") center / cover no-repeat #1b1520; }
+}
+@media (max-width: 760px) {
+  nav.links { display: none; }
+  .svc { grid-template-columns: minmax(0, 1fr); }
+  .svc.flip .main { order: 0; }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .brand img { height: 36px; }
+  .row2 { grid-template-columns: minmax(0, 1fr); }
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .flow li, .flow li + li { padding-left: 0; padding-right: 0; border-left: 0; border-top: 1px solid var(--on-band-line); padding-top: 20px; }
+  .flow li:first-child { border-top: 0; padding-top: 8px; }
+  .hero .actions .btn { flex: 1 1 100%; }
+  .cam span { font-size: 9.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .live::before, .cam.alert i { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#topo" aria-label="Início"><img src="assets/logo-cinza.png" alt="Easy Porter" width="900" height="242"></a>
+    <nav class="links" aria-label="Seções">
+      <a href="#monitoramento">Monitoramento 24h</a>
+      <a href="#consultoria">Consultoria</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <a class="btn" href="#contato">Fale conosco</a>
+  </div>
+</header>
+
+<main id="topo">
+  <div class="hero">
+    <div class="wrap">
+      <div class="copy">
+        <p class="eyebrow">Portaria remota</p>
+        <h1>Portaria que não dorme e uma equipe que sabe o que fazer.</h1>
+        <p class="lead">Operamos um posto de monitoramento 24 horas conectado ao Smart Sampa e organizamos a gestão da sua portaria remota: processos claros, pessoas capacitadas e setores funcionando em conjunto.</p>
+        <div class="actions">
+          <a class="btn light" href="#contato">Solicitar uma conversa</a>
+          <a class="btn outline-light" href="#monitoramento">Ver os serviços</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="monitoramento">
+    <div class="wrap">
+      <div class="mon-top">
+        <div class="sec-head">
+          <p class="eyebrow">O que entregamos</p>
+          <h2>Dois serviços que se completam.</h2>
+          <p>Um posto que observa e aciona, e uma consultoria que garante que a operação da portaria funcione do jeito certo no dia a dia.</p>
+        </div>
+        <div class="wall" role="img" aria-label="Ilustração de um mosaico de câmeras em um posto de monitoramento, com seis pontos de vigilância ativos e um deles em atendimento.">
+          <div class="wall-head"><b>Posto de monitoramento</b><span class="live">Ao vivo · 24h</span></div>
+          <div class="grid-cams">
+            <div class="cam"><i></i><span>CAM 01 · Portaria social</span></div>
+            <div class="cam"><i></i><span>CAM 02 · Garagem</span></div>
+            <div class="cam alert"><i></i><span>CAM 03 · Acesso pedestres</span></div>
+            <div class="cam"><i></i><span>CAM 04 · Hall</span></div>
+            <div class="cam"><i></i><span>CAM 05 · Perímetro</span></div>
+            <div class="cam"><i></i><span>CAM 06 · Doca</span></div>
+          </div>
+          <div class="wall-foot"><span>Conexão Smart Sampa</span><time id="clock" datetime="">--:--:--</time></div>
+        </div>
+      </div>
+
+      <article class="svc">
+        <div class="main">
+          <p class="tag">Serviço 1</p>
+          <h3>Posto de monitoramento 24 horas conectado ao Smart Sampa</h3>
+          <p>Operadores acompanham as imagens da sua unidade em tempo integral, dia e noite, inclusive em feriados. As ocorrências seguem um protocolo definido e a integração com o Smart Sampa amplia a resposta do poder público quando necessário.</p>
+          <a class="btn" href="#contato" style="justify-self:start">Quero monitoramento</a>
+        </div>
+        <div class="list">
+          <ul>
+            <li><strong>Vigilância contínua das câmeras</strong><span>Equipe dedicada observando os pontos críticos da unidade, sem pausa.</span></li>
+            <li><strong>Conexão com o Smart Sampa</strong><span>Integração com o programa de monitoramento da cidade de São Paulo.</span></li>
+            <li><strong>Protocolo de acionamento</strong><span>Cada tipo de ocorrência tem um caminho: quem avisar, em que ordem e com que registro.</span></li>
+            <li><strong>Registro de cada ocorrência</strong><span>Histórico organizado para consulta de síndicos, gestores e responsáveis.</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="svc flip" id="consultoria">
+        <div class="main">
+          <p class="tag">Serviço 2</p>
+          <h3>Consultoria de gestão em portaria remota</h3>
+          <p>Para quem já tem portaria remota ou vai implantar uma. Desenhamos como a operação deve funcionar, preparamos quem vai executá-la e organizamos os setores envolvidos para que ninguém dependa de improviso.</p>
+          <a class="btn" href="#contato" style="justify-self:start">Quero a consultoria</a>
+        </div>
+        <div class="list">
+          <ul>
+            <li><strong>Criação de processos</strong><span>Rotinas de entrada, visitas, entregas, prestadores e emergências, escritas e testadas.</span></li>
+            <li><strong>Capacitação de pessoas</strong><span>Treinamento de porteiros, operadores, zeladoria e administração para a nova forma de trabalhar.</span></li>
+            <li><strong>Organização dos setores</strong><span>Definição de responsabilidades entre portaria, administração, manutenção e segurança.</span></li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="band" id="como-funciona">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Como funciona o monitoramento</p>
+        <h2>Do alerta à resposta, em um caminho definido.</h2>
+      </div>
+      <ol class="flow">
+        <li><h3>Câmeras conectadas</h3><p>As imagens da unidade chegam ao nosso posto.</p></li>
+        <li><h3>Central 24 horas</h3><p>Operadores observam, identificam e classificam cada situação.</p></li>
+        <li><h3>Smart Sampa</h3><p>Quando o caso exige, a ocorrência é levada à rede de monitoramento da cidade.</p></li>
+        <li><h3>Acionamento e registro</h3><p>Responsáveis são avisados conforme o protocolo e tudo fica documentado.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Três frentes da consultoria</p>
+        <h2>A tecnologia só funciona quando a rotina está organizada.</h2>
+        <p>Trabalhamos nas três frentes ao mesmo tempo, porque uma portaria remota falha quando falta um desses elementos.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="9" height="7" rx="1.5"/><rect x="23" y="5" width="9" height="7" rx="1.5"/><rect x="13.5" y="24" width="9" height="7" rx="1.5"/><path d="M8.5 12v5h19v-5M18 17v7"/></svg>
+          <h3>Processos</h3>
+          <p>Fluxos escritos para cada situação da portaria, com responsáveis, prazos e formas de registro.</p>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="12" r="5"/><path d="M3.5 30c0-5.2 4.2-9 9.5-9s9.5 3.8 9.5 9"/><circle cx="26" cy="13" r="3.6"/><path d="M26 21c3.6 0 6.5 2.7 6.5 7"/></svg>
+          <h3>Pessoas</h3>
+          <p>Capacitação prática para quem opera, atende e decide, com foco na rotina real da unidade.</p>
+        </div>
+        <div class="pillar">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2"/><rect x="20" y="4" width="12" height="12" rx="2"/><rect x="4" y="20" width="12" height="12" rx="2"/><path d="M20 26h12M26 20v12"/></svg>
+          <h3>Setores</h3>
+          <p>Divisão clara de papéis entre portaria, administração, manutenção e segurança, sem sobreposição.</p>
+        </div>
+      </div>
+
+      <div class="who-wrap">
+        <h2>Onde atuamos.</h2>
+        <ul class="who">
+          <li>Condomínios residenciais</li>
+          <li>Condomínios comerciais</li>
+          <li>Empresas e escritórios</li>
+          <li>Galpões e centros logísticos</li>
+          <li>Administradoras de condomínios</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contato">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Contato</p>
+        <h2>Conte como é a sua portaria.</h2>
+        <p class="lead">Descreva a unidade e o que você precisa. Respondemos com os próximos passos para monitoramento, consultoria ou os dois.</p>
+      </div>
+      <form id="briefing" novalidate>
+        <div class="row2">
+          <div class="field"><label for="nome">Nome</label><input id="nome" name="nome" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="local">Condomínio ou empresa</label><input id="local" name="local" type="text" autocomplete="organization"></div>
+        </div>
+        <div class="field">
+          <label for="interesse">Interesse</label>
+          <select id="interesse" name="interesse">
+            <option>Monitoramento 24h conectado ao Smart Sampa</option>
+            <option>Consultoria de gestão em portaria remota</option>
+            <option>Os dois serviços</option>
+          </select>
+        </div>
+        <div class="field"><label for="msg">Situação atual</label><textarea id="msg" name="msg" placeholder="Número de blocos, quantidade de câmeras, como é a portaria hoje."></textarea></div>
+        <button class="btn" type="submit" style="justify-self:start">Montar meu pedido</button>
+        <div class="result" id="result" hidden>
+          <pre id="out"></pre>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+            <button class="btn ghost" type="button" id="copy">Copiar texto</button>
+            <span class="note" id="copied" role="status"></span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/logo-escuro.png" alt="Easy Porter" width="900" height="242">
+    <span>© 2026 · Portaria remota, monitoramento e gestão · São Paulo, SP</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var clock = document.getElementById("clock");
+  function tick() {
+    var d = new Date();
+    var p = function (n) { return String(n).padStart(2, "0"); };
+    clock.textContent = p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  }
+  tick(); setInterval(tick, 1000);
+
+  var form = document.getElementById("briefing");
+  var box = document.getElementById("result");
+  var out = document.getElementById("out");
+  var copied = document.getElementById("copied");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = new FormData(form);
+    var nome = (f.get("nome") || "").toString().trim();
+    if (!nome) { document.getElementById("nome").focus(); return; }
+    var linhas = [
+      "Olá! Quero conversar sobre " + f.get("interesse") + ".",
+      "Nome: " + nome,
+      "Condomínio/empresa: " + ((f.get("local") || "").toString().trim() || "não informado"),
+      "Situação atual: " + ((f.get("msg") || "").toString().trim() || "não informada")
+    ];
+    out.textContent = linhas.join("\n");
+    box.hidden = false;
+    copied.textContent = "";
+  });
+  document.getElementById("copy").addEventListener("click", function () {
+    var text = out.textContent;
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(out);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      copied.textContent = "Texto selecionado. Use copiar do seu dispositivo.";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { copied.textContent = "Texto copiado."; }, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>
