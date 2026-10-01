@@ -167,7 +167,6 @@ form { display: grid; gap: 16px; }
 .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .result { margin-top: 4px; padding: 16px; border: 1px solid var(--accent); border-radius: 6px; background: var(--panel); display: grid; gap: 12px; }
 .result pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 14px/1.55 var(--font-mono); color: var(--fg); }
-.result .note { font-size: 14px; color: var(--muted); }
 
 /* Rodapé */
 footer { background: var(--band); color: var(--on-band-muted); padding-block: 36px; font-size: 14px; }
@@ -369,10 +368,6 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
         <button class="btn" type="submit" style="justify-self:start">Montar meu pedido</button>
         <div class="result" id="result" hidden>
           <pre id="out"></pre>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-            <button class="btn ghost" type="button" id="copy">Copiar texto</button>
-            <span class="note" id="copied" role="status"></span>
-          </div>
         </div>
       </form>
     </div>
@@ -399,7 +394,6 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
   var form = document.getElementById("briefing");
   var box = document.getElementById("result");
   var out = document.getElementById("out");
-  var copied = document.getElementById("copied");
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var f = new FormData(form);
@@ -413,18 +407,6 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
     ];
     out.textContent = linhas.join("\n");
     box.hidden = false;
-    copied.textContent = "";
-  });
-  document.getElementById("copy").addEventListener("click", function () {
-    var text = out.textContent;
-    function fallback() {
-      var r = document.createRange(); r.selectNodeContents(out);
-      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      copied.textContent = "Texto selecionado. Use copiar do seu dispositivo.";
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { copied.textContent = "Texto copiado."; }, fallback);
-    } else { fallback(); }
   });
 })();
 </script>
