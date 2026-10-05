@@ -3,7 +3,7 @@
 // Variáveis de ambiente (configuradas no projeto da Vercel):
 //   RESEND_API_KEY      chave da API do Resend (obrigatória)
 //   CONTACT_TO_EMAIL    e-mail que recebe os contatos (obrigatória)
-//   CONTACT_FROM_EMAIL  remetente; padrão "Site Easy Port <onboarding@resend.dev>".
+//   CONTACT_FROM_EMAIL  remetente; padrão "Site Easy Porter <onboarding@resend.dev>".
 //                       Troque por um endereço do domínio da empresa depois de
 //                       verificar o domínio no Resend.
 
@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const para = process.env.CONTACT_TO_EMAIL;
-  const de = process.env.CONTACT_FROM_EMAIL || "Site Easy Port <onboarding@resend.dev>";
+  const de = process.env.CONTACT_FROM_EMAIL || "Site Easy Porter <onboarding@resend.dev>";
   if (!apiKey || !para) {
     console.error("Contato: RESEND_API_KEY ou CONTACT_TO_EMAIL não configurados.");
     return res.status(500).json({ erro: "O envio de mensagens ainda não está configurado. Tente novamente mais tarde." });
