@@ -210,8 +210,30 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
   .hero .actions .btn { flex: 1 1 100%; }
   .cam span { font-size: 9.5px; }
 }
+/* Balão do WhatsApp */
+.wa-float {
+  position: fixed; z-index: 20;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 56px; padding: 0 22px 0 16px;
+  background: #1f9e4f; color: #ffffff;
+  border-radius: 999px; text-decoration: none;
+  font: 600 15px/1 var(--font-body);
+  box-shadow: 0 8px 24px rgba(22, 19, 26, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.wa-float:hover { background: #188a43; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(22, 19, 26, 0.34); }
+.wa-float:focus-visible { outline-color: #ffffff; box-shadow: 0 0 0 3px #1f9e4f, 0 8px 24px rgba(22, 19, 26, 0.28); }
+.wa-float svg { width: 26px; height: 26px; flex: none; }
+@media (max-width: 520px) {
+  .wa-float { width: 56px; padding: 0; justify-content: center; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+  .wa-float span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .wa-float { transition: none; }
+  .wa-float:hover { transform: none; }
   .live::before, .cam.alert i { animation: none; }
   .btn { transition: none; }
 }
@@ -398,6 +420,11 @@ footer img { height: 48px; width: auto; max-width: 100%; display: block; }
     <span>© 2026 · Portaria remota, monitoramento e gestão · São Paulo, SP</span>
   </div>
 </footer>
+
+<a class="wa-float" href="https://wa.me/5511993764166?text=Ol%C3%A1%2C%20fiquei%20interessado%20nos%20servi%C3%A7os%20da%20Easy%20Porter%20e%20gostaria%20de%20saber%20mais%20sobre%20voc%C3%AAs." target="_blank" rel="noopener" aria-label="Conversar pelo WhatsApp">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.6-5.2A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></svg>
+  <span>Fale no WhatsApp</span>
+</a>
 
 <script>
 (function () {
